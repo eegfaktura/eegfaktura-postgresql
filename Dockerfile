@@ -30,12 +30,11 @@ LABEL org.opencontainers.image.base.name=docker.io/postgres:15-alpine
 LABEL description="Database container with initial DB Schema for EEG Faktura"
 LABEL version="0.1.0"
 
-#WORKDIR /eegfaktura-postgresql
-
 RUN chown 70 docker-entrypoint-initdb.d
 COPY --chown=70 docker-entrypoint-initdb.d/* /docker-entrypoint-initdb.d
 
 ENV DB_HOSTNAME="eegfaktura-postgres"
 ENV DB_DATABASE="eegfaktura"
+ENV KEYCLOAK_DATABASE="keycloak"
 
 EXPOSE 5432

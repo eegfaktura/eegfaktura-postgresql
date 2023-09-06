@@ -16,20 +16,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
+set -e
 
-SED=`which sed`
+PSQL=`which psql`
 
-#Replace Database in SQL file if DB_DATABASE differs from "eegfaktura"
-if [ "$DB_DATABASE" != "eegfaktura" ]; then
-  cd /docker-entrypoint-initdb.d/
-  echo "Change Database from eegfatura to $DB_DATABASE"
-  $SED -i "s/\\c eegfaktura/c\\ $DB_DATABASE/g" *.sql
-fi
-
-if [ "$DB_PASSWORD" == "" ] && [ "$DB_PASSWORD_FILE" != "" ] && [ -f "$DB_PASSWORD_FILE" ]; then
-  export DB_PASSWORD=`head -n 1 "$DB_PASSWORD_FILE"`
-fi
-
-if [ "$KEYCLOAK_DB_PASSWORD" == "" ] && [ "$KEYCLOAK_DB_PASSWORD_FILE" != "" ] && [ -f "$KEYCLOAK_DB_PASSWORD_FILE" ]; then
-  export KEYCLOAK_DB_PASSWORD=`head -n 1 "$KEYCLOAK_DB_PASSWORD_FILE"`
-fi
+# Create User and Database
+$PSQL -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+    CREATE USER $KEYCLOAK_DB_USERNAME WITH PASSWORD '$KEYCLOAK_DB_PASSWORD';
+    CREATE DATABASE $KEYCLOAK_DATABASE;
+    \c $KEYCLOAK_DATABASE
+    GRANT ALL PRIVILEGES ON DATABASE $KEYCLOAK_DATABASE TO $KEYCLOAK_DB_USERNAME;
+    GRANT ALL ON SCHEMA public TO $KEYCLOAK_DB_USERNAME;
+EOSQL
