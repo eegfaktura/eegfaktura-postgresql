@@ -22,7 +22,7 @@ SED=`which sed`
 #Replace Database in SQL file if DB_DATABASE differs from "eegfaktura"
 if [ "$DB_DATABASE" != "eegfaktura" ]; then
   cd /docker-entrypoint-initdb.d/
-  echo "Change Database from eegfatura to $DB_DATABASE"
+  echo "Change Database from eegfaktura to $DB_DATABASE"
   $SED -i "s/\\c eegfaktura/c\\ $DB_DATABASE/g" *.sql
 fi
 
