@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS base.EEG
     iban                 TEXT,
     owner                TEXT,
     sepa                 BOOLEAN NOT NULL DEFAULT false,
+    bankName             TEXT,
     -- Contact Info
     phone                TEXT,
     email                TEXT    NOT NULL,
@@ -143,7 +144,7 @@ CREATE TABLE IF NOT EXISTS base.bankaccount
     participant_id UUID NOT NULL,
     iban           TEXT NOT NULL,
     owner          TEXT,
-    name           TEXT, 
+    bankName       TEXT, 
     CONSTRAINT bankaccountPK PRIMARY KEY (id),
     CONSTRAINT FK_ParticipantBankaccount FOREIGN KEY (participant_id) REFERENCES base.participant (id) ON DELETE CASCADE
 );
@@ -282,11 +283,11 @@ SELECT p.id                                                      participant_id,
        t."centPerKWh"                                            tariff_working_fee_per_consumedkwh,
        t."centPerKWh"                                            tariff_credit_amount_per_producedkwh,
        t."freeKWh"                                               tariff_freekwh,
-       'Bank Name'                                               participant_bank_name,
+       COALESCE(b."bankName", '')                                participant_bank_name,
        b.iban                                                    participant_bank_iban,
        b.owner                                                   participant_bank_owner,
        o.email                                                   participant_email,
-       'Bank Name'                                               eec_bank_name,
+       COALESCE(c."bankName", '')                                eec_bank_name,
        c.iban                                                    eec_bank_iban,
        c.owner                                                   eec_bank_owner
 FROM base.participant p
