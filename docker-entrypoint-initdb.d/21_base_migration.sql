@@ -178,9 +178,26 @@ CREATE TABLE IF NOT EXISTS base.meteringpoint
     flag               INT       NOT NULL DEFAULT 1,
     CONSTRAINT meteringpointPK PRIMARY KEY (metering_point_id, tenant, participant_id),
     CONSTRAINT FK_ParticipantMeteringpoint FOREIGN KEY (participant_id) REFERENCES base.participant (id) ON DELETE CASCADE
+--    UNIQUE (metering_point_id, active)
+--     CONSTRAINT FK_TariffMeteringpoint FOREIGN KEY (tariff_id) REFERENCES base.tariff (id)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_meteringpoint_active ON base.meteringpoint (metering_point_id, tenant, active) where active = 1;
 
+-- CREATE TABLE IF NOT EXISTS base.participant_meter_state
+-- (
+--     participant_id UUID      NOT NULL,
+--     tenant         TEXT      NOT NULL,
+--     metering_point TEXT      NOT NULL,
+--     activeSince    TIMESTAMP NOT NULL DEFAULT now(),
+--     inactiveSince  TIMESTAMP NOT NULL DEFAULT Date('2999-12-31'),
+--     changed_at     TIMESTAMP NOT NULL DEFAULT now(),
+--     changed_by     TEXT      NOT NULL,
+--     flag           INT       NOT NULL DEFAULT 1,
+--     active         INT       NOT NULL DEFAULT 1,
+--     CONSTRAINT PK_Participant_meter_state PRIMARY KEY (metering_point, tenant, active),
+--     CONSTRAINT FK_Participant_state FOREIGN KEY (participant_id) REFERENCES base.participant (id) ON DELETE CASCADE,
+--     CONSTRAINT FK_Metering_state FOREIGN KEY (metering_point, tenant) REFERENCES base.meteringpoint (metering_point_id, tenant) ON DELETE CASCADE
+-- );
 
 CREATE TABLE IF NOT EXISTS base.notification
 (
@@ -302,4 +319,6 @@ FROM base.participant p
          LEFT JOIN base.activetariff tp ON tp.id = p."tariffId" AND tp.type = 'EEG'
          LEFT JOIN base.bankaccount b ON b.participant_id = p.id
          LEFT JOIN base.contactdetail o ON o.participant_id = p.id;
-
+         
+         
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA base TO eegfaktura;    

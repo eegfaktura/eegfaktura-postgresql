@@ -52,4 +52,6 @@ CREATE TABLE IF NOT EXISTS eda.outbox
     tenant   VARCHAR NOT NULL,
     content  bytea NOT NULL,
     sent     TIMESTAMP NOT NULL
-)
+);
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA eda TO eegfaktura;
